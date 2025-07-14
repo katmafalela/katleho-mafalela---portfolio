@@ -65,20 +65,21 @@ const Chatbot: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const response = await chat.sendMessage({ message: input });
+    const response = await chat.sendMessage({ message: input });
 
-            // FIX: Provide a fallback string in case response.text is undefined.
-            const responseText = response.text || "Sorry, I couldn't generate a response. Please try again.";
-            
-            const modelMessage: ChatMessage = { role: 'model', text: responseText };
-            setMessages(prev => [...prev, modelMessage]);
-        } catch (error) {
-            console.error("Error sending message:", error);
-            const errorMessage: ChatMessage = { role: 'model', text: "Something went wrong. Please try again." };
-            setMessages(prev => [...prev, errorMessage]);
-        } finally {
-            setIsLoading(false);
-        }
+    // FIX: Provide a fallback string in case response.text is undefined.
+    // This is what solves the build error on Vercel.
+    const responseText = response.text || "Sorry, I couldn't generate a response. Please try again.";
+    
+    const modelMessage: ChatMessage = { role: 'model', text: responseText };
+    setMessages(prev => [...prev, modelMessage]);
+} catch (error) {
+    console.error("Error sending message:", error);
+    const errorMessage: ChatMessage = { role: 'model', text: "Something went wrong. Please try again." };
+    setMessages(prev => [...prev, errorMessage]);
+} finally {
+    setIsLoading(false);
+}
     };
 
     const toggleChat = () => setIsOpen(!isOpen);
