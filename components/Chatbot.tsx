@@ -20,7 +20,7 @@ const Chatbot: React.FC = () => {
             try {
                 // Per guidelines, we assume the API key is available in the environment.
                 // In Next.js, client-side env vars must be prefixed with NEXT_PUBLIC_.
-                const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+                const apiKey: string = process.env.NEXT_PUBLIC_API_KEY || '';
                 if (!apiKey) {
                     console.error("API key is missing. Please set NEXT_PUBLIC_API_KEY environment variable.");
                     setMessages([{ role: 'model', text: "Sorry, the AI assistant is not configured correctly. API key is missing." }]);
@@ -66,7 +66,11 @@ const Chatbot: React.FC = () => {
 
         try {
             const response = await chat.sendMessage({ message: input });
-            const modelMessage: ChatMessage = { role: 'model', text: response.text };
+
+            // FIX: Provide a fallback string in case response.text is undefined.
+            const responseText = response.text || "Sorry, I couldn't generate a response. Please try again.";
+            
+            const modelMessage: ChatMessage = { role: 'model', text: responseText };
             setMessages(prev => [...prev, modelMessage]);
         } catch (error) {
             console.error("Error sending message:", error);
